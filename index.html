@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VR in the EFL classroom</title>
+<style>
+  :root { --ink:#1B2A33; --petrol:#0F4C5C; --mist:#E8F0EF; --orange:#D9692F; }
+  html, body { margin:0; min-height:100%; background:var(--petrol); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color:var(--ink); }
+  main { max-width:620px; margin:0 auto; padding:28px 16px 40px; }
+  h1 { color:#fff; font-size:28px; margin:0 0 4px; }
+  p.lead { color:#cfe0de; margin:0 0 22px; font-size:15px; }
+  a.card { display:block; background:var(--mist); border-radius:14px; padding:20px 22px; margin:0 0 14px; text-decoration:none; color:var(--ink); border-left:8px solid var(--orange); }
+  a.card:hover, a.card:focus { background:#fff; }
+  a.card h2 { margin:0 0 6px; font-size:21px; color:var(--petrol); }
+  a.card p { margin:0; font-size:15px; line-height:1.45; color:#4b5b62; }
+  #status { margin-top:22px; padding:12px 14px; border-radius:10px; background:rgba(255,255,255,.12); color:#fff; font-size:14px; line-height:1.5; }
+  #status b { color:#fff; }
+  .ok { color:#9fe0b0 !important; } .wait { color:#ffd79a !important; }
+</style>
+<script>
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(function () {});
+</script>
+</head>
+<body>
+<main>
+  <h1>VR in the EFL classroom</h1>
+  <p class="lead">Two short simulations · Meta Quest, Cardboard or laptop</p>
+  <a class="card" href="reading/"><h2>Reading aloud under pressure</h2><p>Read an IPA text aloud in front of the class – and notice what anxiety does to your attention.</p></a>
+  <a class="card" href="kitchen/"><h2>Kitchen words</h2><p>Explore seven kitchen objects, follow spoken instructions, say the words and take a quick quiz.</p></a>
+  <div id="status">Checking offline use …</div>
+</main>
+<script>
+  (async function () {
+    const st = document.getElementById('status');
+    if (location.protocol !== 'https:' || !('serviceWorker' in navigator) || !window.caches) { st.innerHTML = 'Offline use is only available on the web version of this page.'; return; }
+    const need = ['index.html', 'reading/index.html', 'reading/aframe.min.js', 'kitchen/index.html', 'kitchen/aframe.min.js'];
+    async function check() {
+      let n = 0; for (const f of need) { if (await caches.match(new URL(f, location.href).href)) n++; }
+      if (n === need.length) st.innerHTML = '<b class="ok">✓ Saved on this device.</b> Both simulations now also work without internet.';
+      else { st.innerHTML = '<b class="wait">Saving for offline use … (' + n + ' of ' + need.length + ')</b> Keep this page open for a moment.'; setTimeout(check, 1500); }
+    }
+    try { await navigator.serviceWorker.ready; check(); } catch (e) { st.textContent = 'Offline use not available in this browser.'; }
+  })();
+</script>
+</body>
+</html>
